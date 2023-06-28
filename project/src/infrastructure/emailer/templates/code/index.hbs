@@ -1,0 +1,56 @@
+<html>
+  <head>
+    <meta charset='utf-8' />
+    <title>Confirmation Code Email</title>
+  </head>
+  <body>
+    <table cellpadding='0' cellspacing='0' border='0' width='100%'>
+      <tr>
+        <td align='center' valign='top'>
+          <table
+            cellpadding='0'
+            cellspacing='0'
+            border='0'
+            width='600'
+            style='border-collapse: collapse;'
+          >
+            <tr>
+              <td align='center' valign='top' style='padding: 20px 0;'>
+                <h1>Confirmation Code Email</h1>
+              </td>
+            </tr>
+            <tr>
+              <td align='center' valign='top' style='padding: 20px 0;'>
+                <p>Hello,</p>
+                <p>Thank you for registering! Your confirmation code is:</p>
+                <p style='font-size: 24px; font-weight: bold;'>{{code}}</p>
+                <p>Please enter this code to complete the registration process.</p>
+
+                {{#if invite}}
+                  <p>Or follow the link
+
+                    <a
+                      style='font-size: 18px;'
+                      href='{{FRONT_URL}}/shops/employees/approve?shopId={{invite.shopId}}&inviteId={{invite.inviteId}}&code={{code}}'
+                    >
+                      register confirmation
+                    </a>.</p>
+
+                {{/if}}
+
+              </td>
+            </tr>
+            {{#if company_name}}
+              <tr>
+                <td align='center' valign='top' style='padding: 20px 0;'>
+                  <p>Best regards,</p>
+                  <p>The {{company_name}} Team</p>
+                </td>
+              </tr>
+            {{/if}}
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
