@@ -33,10 +33,6 @@ export class ListingDto {
   filter: string
 
   @IsOptional()
-  @IsString()
-  categoryFilters?: string
-
-  @IsOptional()
   @Transform(({ value }) => {
     let transformValue
     if (isArray(value)) {

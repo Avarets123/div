@@ -5,8 +5,6 @@ import {
   HttpStatus,
 } from '@nestjs/common'
 import { constantCase } from 'change-case'
-import { ValidationErrorResponse } from 'src/infrastructure/validation/errors/validationError.response'
-import { CodeExceptionsEnum } from '../enums'
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -21,19 +19,6 @@ export class AllExceptionsFilter implements ExceptionFilter {
         'INTERNAL_SERVER_ERROR',
     )
     let message = exception['message'] || undefined
-
-    if (exception['code'] === '23505') {
-      status = HttpStatus.CONFLICT
-      code = CodeExceptionsEnum.ConflictException
-      message = exception['detail']
-    }
-
-    if (exception?.['response'] instanceof ValidationErrorResponse) {
-      const exc = exception['response']
-      code = exc.code
-      status = exc.status
-      message = exc.exceptions
-    }
 
     return response.status(status).json({ status, code, message })
   }

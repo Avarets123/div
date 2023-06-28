@@ -6,7 +6,8 @@ import { interceptorBoot } from '@infrastructure/inceptors/inceptors.boot'
 async function bootstrap() {
   const app = await NestFactory.create(AppModule)
   app.enableCors()
-
+  interceptorBoot(app)
+  exceptionBoot(app)
   await app.listen(process.env.PORT || 3000)
 }
 bootstrap()

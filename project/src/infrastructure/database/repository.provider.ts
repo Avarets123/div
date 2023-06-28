@@ -8,28 +8,18 @@ import { SpleenHandler } from '@infrastructure/spleen/filterHandler'
 export class RepositoryProvider {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findMany<T>(
-    tableName: string,
-    model: any,
-    params: ListingDto,
-    include?: Record<string, any>,
-    andWhere?: Partial<T>,
-  ) {
+  async findMany(tableName: string, model: any, params: ListingDto) {
     const allFields = (await this.prisma.getTableFields(tableName)).map(
       (el) => el.column_name,
     )
 
-    const { filter } = this.applySpleen(params.filter)
+    const { filter } = this.applySpleen(params.filter, allFields)
 
     let where: any = {
       AND: {
         OR: await this.applySearch(params.query, tableName),
         ...filter,
       },
-    }
-
-    if (andWhere) {
-      _.merge(where, andWhere)
     }
 
     if (allFields.find((f) => f === 'deletedAt')) {
@@ -48,7 +38,6 @@ export class RepositoryProvider {
       orderBy: this.applyOrdering(params.sort),
       skip,
       take,
-      include: include,
     })
 
     const recordsCount = model.count({
@@ -75,7 +64,7 @@ export class RepositoryProvider {
   applyOrdering(sort: SortItemDto[]) {
     return sort?.length
       ? sort.map((item) => ({ [item.field]: item.direction }))
-      : ([{ createdAt: 'desc' }] as unknown)
+      : ([{ created_at: 'desc' }] as unknown)
   }
 
   async softDelete(model: any, where: any) {
@@ -106,10 +95,10 @@ export class RepositoryProvider {
     return res
   }
 
-  applySpleen(input: string) {
+  applySpleen(input: string, fields: string[]) {
     const filterHandler = new SpleenHandler()
 
-    const filter = input ? filterHandler.build(input) : undefined
+    const filter = input ? filterHandler.build(input, fields) : undefined
 
     return {
       filter,
