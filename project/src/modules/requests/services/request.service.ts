@@ -5,12 +5,14 @@ import { RequestUpdateDto } from '../dto/requestUpdate.dto'
 import { ListingDto } from '@infrastructure/common/pagination/dto'
 import { RepositoryProvider } from '@infrastructure/database/repository.provider'
 import { Prisma, RequestStatusEnum } from '@prisma/client'
+import { EmailService } from '@infrastructure/emailer/service/emailer.service'
 
 @Injectable()
 export class RequestService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly repository: RepositoryProvider,
+    private readonly emailService: EmailService,
   ) {}
 
   createRequest(data: RequestCreateDto) {
@@ -19,12 +21,12 @@ export class RequestService {
     })
   }
 
-  updateRequest(id: string, data: RequestUpdateDto) {
+  async updateRequest(id: string, data: RequestUpdateDto) {
     const { comment } = data
 
     const status = RequestStatusEnum.Resolved
 
-    return this.prisma.request.update({
+    const updatedReq = await this.prisma.request.update({
       where: {
         id,
       },
@@ -33,6 +35,12 @@ export class RequestService {
         status,
       },
     })
+
+    const to = updatedReq.email
+    const text = 'На вашу заявку ответили!'
+
+    await this.emailService.send({ to, text })
+    return updatedReq
   }
 
   findRequests(listing: ListingDto) {
