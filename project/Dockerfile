@@ -29,4 +29,4 @@ COPY --from=builder --chown=node:node /usr/src/app/dist/ ./dist/
 COPY --from=builder --chown=node:node /usr/src/app/src/infrastructure/database/prisma/ ./src/infrastructure/database/prisma/
 
 
-CMD ["node", "dist/main.js"]
+CMD ["npm", "run", "start:prod"]
